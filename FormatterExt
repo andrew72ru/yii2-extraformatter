@@ -1,0 +1,146 @@
+<?php
+
+namespace common\modules\formatter; // Измените это на свой путь
+/**
+ * Форматирование для телефонов РФ и сумм прописью
+ */
+use Yii;
+use yii\i18n\Formatter;
+/**
+ * Description of Formatter here
+ * https://github.com/yiisoft/yii2-framework/blob/master/i18n/Formatter.php
+ *
+ * @author andrew72ru
+ */
+class FormatterExt extends Formatter
+{
+  /**
+   * Форматирование телефонов
+   * Укажите свой код города
+   * @param string $value
+   * @param string $code
+   * @return string
+   * /
+	public function asPhone($value, $code = '3452')
+	{
+		$value = preg_replace('/\D/i', '', $value);
+		
+		if(!$value)
+			return;
+		
+		if(strlen($value) != 6 && strlen($value) != 11)
+			return $value;
+		
+		$retArr = str_split($value);
+        
+        $retVal = '';
+        
+		if(strlen($value) == 11)
+		{
+			if($retArr[1] == 9) // Мобильный телефон
+            {
+				$retVal = '+' . $retArr[0] . ' (' . $retArr[1] . $retArr[2] . $retArr[3] . ') '
+					. $retArr[4] . $retArr[5] . $retArr[6] . '-'
+					. $retArr[7] . $retArr[8] . '-' . $retArr[9] . $retArr[10];
+            } else // городской телефон с кодом
+            {
+				$retVal = '+' . $retArr[0] . ' (' . $retArr[1] . $retArr[2] . $retArr[3] . $retArr[4] . ') '
+					. $retArr[5] . $retArr[6] . '-'
+					. $retArr[7] . $retArr[8] . '-' . $retArr[9] . $retArr[10];
+            }
+		}
+		else 
+		{
+			$retVal = '+7 (' . $code . ') ' . $retArr[0] . $retArr[1] . '-' . $retArr[2] . $retArr[3] . '-' . $retArr[4] . $retArr[5];
+		}
+        return $retVal;
+	}
+  
+  /**
+   * Форматирование числа в сумму прописью
+   * @param string $value
+   * @return string
+   */
+  public function asSpellMoney($value)
+    {
+        $int = floor($value);
+        $dr = ceil(($value - $int) * 100);
+        $intSpell = $this->asSpellout($int);
+        $drSpell = $this->asSpellout($dr);
+        
+        $lastInt = $int%10;
+        switch ($lastInt)
+        {
+            case '1': 
+                $wordOne = 'рубль';
+                break;
+            case '2':
+                $wordOne = 'рубля';
+                break;
+            case '3':
+                $wordOne = 'рубля';
+                break;
+            case '4':
+                $wordOne = 'рубля';
+                break;
+            case '5':
+                $wordOne = 'рублей';
+                break;
+            case '6':
+                $wordOne = 'рублей';
+                break;
+            case '7':
+                $wordOne = 'рублей';
+                break;
+            case '8':
+                $wordOne = 'рублей';
+                break;
+            case '9':
+                $wordOne = 'рублей';
+                break;
+            case '0':
+                $wordOne = 'рублей';
+                break;
+        }
+        
+        $lastCop = $dr%10;
+        switch ($lastCop)
+        {
+            case '1': 
+                $wordTwo = 'копейка';
+                break;
+            case '2':
+                $wordTwo = 'копейки';
+                break;
+            case '3':
+                $wordTwo = 'копейки';
+                break;
+            case '4':
+                $wordTwo = 'копейки';
+                break;
+            case '5':
+                $wordTwo = 'копеек';
+                break;
+            case '6':
+                $wordTwo = 'копеек';
+                break;
+            case '7':
+                $wordTwo = 'копеек';
+                break;
+            case '8':
+                $wordTwo = 'копеек';
+                break;
+            case '9':
+                $wordTwo = 'копеек';
+                break;
+            case '0':
+                $wordTwo = 'копеек';
+                break;
+        }
+        if($dr == '0')
+            $dr = '00';
+        
+        return $intSpell . " " . $wordOne . " " . $dr . " " . $wordTwo;
+    }
+
+}
